@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Scam Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="chat-container">
+    <div class="top-bar">
+        <a href="/history" class="history-btn">📜 History</a>
+    </div>
+
+    <h1>🤖 Scam Detection Assistant</h1>
+    <p class="subtitle">Paste a message and let AI detect scams instantly</p>
+
+    <div class="chat-box">
+
+        {% if result %}
+        <div class="message user">
+            {{ result.highlighted | safe }}
+        </div>
+
+        <div class="message ai">
+
+            <div class="typing">AI is analyzing...</div>
+
+            <div class="result">
+
+                <div class="risk-meter">
+
+                    <div class="water-container">
+                        <svg viewBox="0 0 120 120" class="water-svg">
+
+                            <defs>
+                                <clipPath id="circleClip">
+                                    <circle cx="60" cy="60" r="50"></circle>
+                                </clipPath>
+                            </defs>
+
+                        
+                            <g clip-path="url(#circleClip)">
+                                <path id="waterFill" class="water"
+                                    d="M0,120 Q30,110 60,120 T120,120 V120 H0 Z">
+                                </path>
+                            </g>
+
+                            <!-- BORDER -->
+                            <circle cx="60" cy="60" r="50" class="border"></circle>
+
+                        </svg>
+
+                        <div class="score-text" id="scoreText">0%</div>
+                    </div>
+
+                </div>
+
+                <h3 style="margin-bottom:10px;">
+                    {{ result.label }}
+                </h3>
+                <p>{{ result.explanation }}</p>
+
+            </div>
+
+        </div>
+        {% endif %}
+
+    </div>
+
+    {% if error %}
+    <p style="color: red; margin-bottom: 10px;">{{ error }}</p>
+    {% endif %}
+    <form method="POST" action="/" class="input-box">
+        <input type="text" name="text" placeholder="Paste message here..." value="{{ prefill_text or '' }}" required>
+        <button type="submit">Send</button>
+        <button type="button" onclick="resetChat()">Reset</button>
+    </form>
+
+</div>
+
+<script>
+function resetChat() {
+    window.location.href = "/";
+}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let waveOffset = 0;
+
+    const water = document.getElementById("waterFill");
+    const scoreText = document.getElementById("scoreText");
+    const typingText = document.querySelector(".typing");
+
+    if (!water) return;
+
+    const target = parseInt("{{ result.score if result else 0 }}") || 0;
+
+    let start = null;
+    const duration = target === 0 ? 2000 : 1500;
+
+    function animate(timestamp) {
+        if (!start) start = timestamp;
+
+        const progress = Math.min((timestamp - start) / duration, 1);
+        const current = Math.floor(progress * target);
+
+        if (target === 0) {
+            water.setAttribute("d", `
+                M0 0
+                H120
+                V120
+                H0
+                Z
+            `);
+
+            water.style.fill = "#22c55e"; // green
+            scoreText.textContent = "0%";
+
+            if (typingText) {
+                setTimeout(() => {
+                    typingText.style.display = "none";
+                }, 1500);
+            }
+
+            return;
+        }
+        
+        let color;
+
+        if (current <= 20) {
+            color = "#22c55e"; // green
+        } else if (current <= 40) {
+            color = "#fde047"; // light yellow
+        } else if (current <= 70) {
+            color = "#f97316"; // orange
+        } else {
+            color = "#ef4444"; // red
+        }
+
+        water.style.fill = color;
+        
+
+        const height = (current / 100) * 120;
+
+        // IMPORTANT FIX: move DOWN initially, then UP
+        const y = 120 - height;
+
+        const waveHeight = 4 + 2 * Math.sin(waveOffset / 10);
+
+        waveOffset += 0.6;
+        const shift = waveOffset % 60;
+
+        const wave = `
+        M${shift - 120},${y}
+        Q${shift - 90},${y - waveHeight} ${shift - 60},${y}
+        T${shift - 30},${y}
+        T${shift},${y}
+        T${shift + 30},${y}
+        T${shift + 60},${y}
+        T${shift + 90},${y}
+        T${shift + 120},${y}
+        V120 H0 Z
+        `;
+
+        water.setAttribute("d", wave);
+
+        water.setAttribute("d", wave);
+
+        scoreText.textContent = current + "%";
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            if (typingText) {
+                typingText.style.display = "none";
+            }
+            requestAnimationFrame(animate); // KEEP RUNNING
+        }
+    }
+
+    
+
+    requestAnimationFrame(animate);
+
+});
+</script>
+
+</body>
+</html>

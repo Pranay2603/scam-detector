@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <h1>📜 Scan History</h1>
+    <p class="subtitle">Your previous scam checks</p>
+
+    <div class="top-bar">
+        <button onclick="openModal()" class="history-btn">
+            🗑 Delete Browsing Data
+        </button>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="history-summary">
+        <div class="summary-card">
+            <h3>{{ history|length }}</h3>
+            <p>Total Scans</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>
+                {{ (history|map(attribute='score')|list|sum / history|length)|round(1) if history else 0 }}%
+            </h3>
+            <p>Avg Risk</p>
+        </div>
+
+        <div class="summary-card">
+            <h3>
+                {{ history|selectattr('risk','equalto','High')|list|length }}
+            </h3>
+            <p>High Risk</p>
+        </div>
+    </div>
+
+    <!-- DELETE FORM -->
+    <form method="POST" action="/delete-selected">
+
+        <!-- CARDS -->
+        {% for item in history[::-1] %}
+        <div class="history-card">
+
+            <input type="checkbox" name="selected" value="{{ item.id }}">
+
+            <div class="history-content">
+                <a href="/?text={{ item.text }}" class="history-link">
+                    {{ item.text }}
+                </a>
+
+                <small class="time">{{ item.time }}</small>
+
+                <div class="history-meta">
+                    <span class="score">{{ item.score }}%</span>
+                    <span class="risk {{ item.risk }}">{{ item.risk }}</span>
+                </div>
+            </div>
+
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="delete-btn">🗑 Delete Selected</button>
+
+    </form>
+
+    <br>
+    <a href="/" class="back-btn">⬅ Back</a>
+
+</div>
+
+<div id="deleteModal" class="modal">
+
+    <div class="modal-content">
+
+        <h3>Delete browsing data</h3>
+
+        <select id="timeRange">
+            <option value="1">Last hour</option>
+            <option value="24">Last 24 hours</option>
+            <option value="168">Last 7 days</option>
+            <option value="720">Last 4 weeks</option>
+            <option value="0">All time</option>
+        </select>
+
+        <div class="modal-actions">
+            <button onclick="closeModal()">Cancel</button>
+            <button onclick="deleteByTime()">Delete data</button>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+function openModal() {
+    document.getElementById("deleteModal").style.display = "block";
+}
+
+function closeModal() {
+    document.getElementById("deleteModal").style.display = "none";
+}
+
+function deleteByTime() {
+    const hours = document.getElementById("timeRange").value;
+    window.location.href = "/delete-range/" + hours;
+}
+</script>
+
+</body>
+</html>
