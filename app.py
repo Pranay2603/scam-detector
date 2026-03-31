@@ -1,3 +1,4 @@
+import os
 import time
 from flask import Flask, render_template, request, redirect, url_for
 from model.detector import analyze_text
@@ -63,6 +64,6 @@ def delete_range(hours):
     delete_by_time(hours)
     return redirect("/history")
 
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
