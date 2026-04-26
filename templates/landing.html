@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scam Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="nav">
+    <h2>🤖 Scam Detector</h2>
+    <div class="nav-links">
+        {% if session.get("user") %}
+            <a href="/dashboard">Dashboard</a>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/signup">Signup</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- HERO -->
+<div class="hero-section">
+
+    <!-- LEFT SIDE -->
+    <div class="hero-container">
+        <h1>Detect Scams Instantly with AI</h1>
+        <p>Analyze messages and identify fraud in seconds</p>
+
+        <div class="hero-buttons">
+            <a href="/dashboard"><button class="primary-btn">Get Started</button></a>
+            <a href="#how-it-works" class="btn-secondary">How it Works</a>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE (SLIDER) -->
+    <div class="hero-visual">
+
+        <div class="slider-card">
+
+            <div class="slide active">
+                <img src="{{ url_for('static', filename='ai-visual.png.jpg') }}" class="slider-image">
+                <span class="badge">Fast AI</span>
+                <h3>⚡ Real-time Detection</h3>
+                <p>Scan and identify suspicious messages instantly as they arrive</p>
+                <ul class="slide-points">
+                    <li>⚡ Instant message scanning</li>
+                    <li>🔍 Detect phishing patterns</li>
+                    <li>🚨 Immediate scam alerts</li>
+                </ul>
+            </div>
+
+            <div class="slide">
+                <img src="{{ url_for('static', filename='risk.png.webp') }}" class="slider-image">
+                <span class="badge">AI Powered</span>
+                <h3>📊 Risk Analysis</h3>
+                <p>Evaluate message risk using intelligent pattern recognition</p>
+                <ul class="slide-points">
+                    <li>⚡ Detect fraud patterns</li>
+                    <li>🔍 Analyze links & intent</li>
+                    <li>📊 Assign dynamic risk score</li>
+                </ul>
+            </div>
+
+            <div class="slide">
+                <img src="{{ url_for('static', filename='explain.png.webp') }}" class="slider-image">
+                <span class="badge">Explainable AI</span>
+                <h3>🧠 Smart Explanation</h3>
+                <p>Get clear insights into why a message is flagged as scam</p>
+                <ul class="slide-points">
+                    <li>🧠 Transparent AI reasoning</li>
+                    <li>📌 Highlights risky elements</li>
+                    <li>💡 Builds user awareness</li>
+                </ul>
+            </div>
+
+            <button class="prev">←</button>
+            <button class="next">→</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works" class="how-section">
+
+    <h2>How It Works</h2>
+    <p>Our AI analyzes messages in real-time using advanced detection techniques</p>
+
+    <div class="how-cards">
+
+        <div class="how-card">
+            <h3>1. Input Message</h3>
+            <p>User enters suspicious message or text</p>
+        </div>
+
+        <div class="how-card">
+            <h3>2. AI Analysis</h3>
+            <p>Model analyzes patterns, keywords & intent</p>
+        </div>
+
+        <div class="how-card">
+            <h3>3. Risk Detection</h3>
+            <p>System assigns risk score and flags scams</p>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ABOUT -->
+<div class="about">
+    <h2>About</h2>
+    <p>This tool helps users detect scam messages using intelligent pattern analysis.</p>
+</div>
+
+<!-- FINAL CLEAN JS -->
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const nextBtn = document.querySelector('.next');
+const prevBtn = document.querySelector('.prev');
+const slider = document.querySelector('.slider-card');
+
+function showSlide(index) {
+    slides.forEach((slide, i) => {
+        slide.classList.remove('active');
+        if (i === index) {
+            slide.classList.add('active');
+        }
+    });
+}
+
+function nextSlide() {
+    current = (current + 1) % slides.length;
+    showSlide(current);
+}
+
+function prevSlide() {
+    current = (current - 1 + slides.length) % slides.length;
+    showSlide(current);
+}
+
+nextBtn.addEventListener('click', nextSlide);
+prevBtn.addEventListener('click', prevSlide);
+
+/* AUTO SLIDE */
+let autoSlide = setInterval(nextSlide, 4000);
+
+/* 🔥 PAUSE ON HOVER */
+slider.addEventListener('mouseenter', () => {
+    clearInterval(autoSlide);
+});
+
+slider.addEventListener('mouseleave', () => {
+    autoSlide = setInterval(nextSlide, 4000);
+});
+</script>
+
+
+
+</body>
+</html>

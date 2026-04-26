@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Signup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="auth-container">
+    <div class="auth-card">
+
+        <h2>Create Account</h2>
+        <p class="auth-sub">Join Scam Detector</p>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <!-- GOOGLE BUTTON -->
+        <a href="/google-login" class="btn-google">Sign up with Google</a>
+
+        <!-- SEPARATOR -->
+        <div style="display:flex; align-items:center; gap:10px; margin:15px 0;">
+            <hr style="flex:1; border-color:#444;">
+            <span style="color:#aaa;">or sign up with email</span>
+            <hr style="flex:1; border-color:#444;">
+        </div>
+
+        <!-- SIGNUP FORM -->
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+
+            <button type="submit" class="btn-primary">Signup</button>
+        </form>
+
+        <!-- LOGIN LINK -->
+        <p class="auth-switch">
+            Already have an account? <a href="/login">Login</a>
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

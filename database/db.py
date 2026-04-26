@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 DB_NAME = "history.db"
 
@@ -14,13 +15,22 @@ def init_db():
     cursor = conn.cursor()
 
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            text TEXT,
-            score INTEGER,
-            risk TEXT,
-            created_at TEXT
-        )
+    CREATE TABLE IF NOT EXISTS history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        text TEXT,
+        score INTEGER,
+        risk TEXT,
+        user_id INTEGER,
+        created_at TEXT
+    )
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT
+    )
     """)
 
     conn.commit()
@@ -28,15 +38,16 @@ def init_db():
 
 
 # ✅ INSERT (store REAL datetime, not just display format)
-def insert_history(text, score, risk):
+def insert_history(text, score, risk, user_id):
     conn = get_connection()
     cursor = conn.cursor()
 
+    from datetime import datetime
     now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     cursor.execute(
-        "INSERT INTO history (text, score, risk, created_at) VALUES (?, ?, ?, ?)",
-        (text, score, risk, now)
+        "INSERT INTO history (text, score, risk, user_id, created_at) VALUES (?, ?, ?, ?, ?)",
+        (text, score, risk, user_id, now)
     )
 
     conn.commit()
@@ -44,14 +55,19 @@ def insert_history(text, score, risk):
 
 
 # ✅ FETCH (format time for UI)
-def get_all_history():
+def get_all_history(user_id):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id, text, score, risk, created_at FROM history ORDER BY id DESC")
-    rows = cursor.fetchall()
+    cursor.execute(
+        "SELECT id, text, score, risk, created_at FROM history WHERE user_id = ? ORDER BY id DESC",
+        (user_id,)
+    )
 
+    rows = cursor.fetchall()
     conn.close()
+
+    from datetime import datetime
 
     history = []
     for row in rows:
@@ -94,3 +110,49 @@ def delete_by_time(hours):
 
     conn.commit()
     conn.close()
+
+
+def create_user(username, password, email):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    hashed_password = generate_password_hash(password)  # ✅ inside function
+
+    try:
+        cursor.execute(
+            "INSERT INTO users (username, password, email) VALUES (?, ?, ?)",
+            (username, hashed_password, email)   # ✅ use hashed password
+        )
+        conn.commit()
+        return True
+
+    except Exception as e:
+        print("ERROR:", e)
+        return False
+
+    finally:
+        conn.close()
+
+def get_user(username, password):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user = cursor.fetchone()
+
+    conn.close()
+
+    if user and check_password_hash(user[2], password):
+        return user
+
+    return None
+
+def get_user_by_email(email):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
+    user = cursor.fetchone()
+
+    conn.close()
+    return user

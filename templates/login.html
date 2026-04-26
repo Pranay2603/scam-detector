@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="auth-container">
+    <div class="auth-card">
+
+        <h2>Welcome Back</h2>
+        <p class="auth-sub">Login to continue</p>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if success %}
+        <p class="success-msg" style="color: #4ade80; margin-bottom: 15px;">
+            {{ success }}
+        </p>
+        {% endif %}
+        
+        <script>
+        setTimeout(() => {
+            const msg = document.querySelector('.success-msg');
+            if (msg) msg.style.display = 'none';
+        }, 3000);
+        </script>
+
+        <!-- 🔥 GOOGLE FIRST -->
+        <a href="/google-login" class="btn-google">Sign in with Google</a>
+
+        <!-- 🔥 DIVIDER -->
+        <div style="display:flex; align-items:center; gap:10px; margin:15px 0;">
+            <hr style="flex:1; border-color:#444;">
+            <span style="color:#aaa; font-size: 14px;">or continue with email</span>
+            <hr style="flex:1; border-color:#444;">
+        </div>
+
+        <!-- 🔥 FORM -->
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+
+            <p class="forgot-link">
+                <a href="/forgot-password">Forgot password?</a>
+            </p>
+
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+
+        <!-- 🔥 SIGNUP -->
+        <p class="auth-switch">
+            Don't have an account? <a href="/signup">Signup</a>
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

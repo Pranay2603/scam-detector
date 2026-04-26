@@ -1,0 +1,6 @@
+venv/
+scam-detector/
+__pycache__/
+*.pyc
+*.db
+.env

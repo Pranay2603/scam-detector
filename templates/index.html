@@ -9,10 +9,13 @@
 
 <div class="chat-container">
     <div class="top-bar">
+        <a href="/" class="home-btn">🏠 Home</a>
         <a href="/history" class="history-btn">📜 History</a>
     </div>
 
-    <h1>🤖 Scam Detection Assistant</h1>
+    <h1>
+        <a href="/" class="logo-link">🤖 Scam Detection Assistant</a>
+    </h1>
     <p class="subtitle">Paste a message and let AI detect scams instantly</p>
 
     <div class="chat-box">
@@ -24,9 +27,11 @@
 
         <div class="message ai">
 
-            <div class="typing">AI is analyzing...</div>
+            <div class="typing">
+                AI is analyzing<span class="dots"></span>
+            </div>
 
-            <div class="result">
+            <div class="result-card">
 
                 <div class="risk-meter">
 
@@ -56,10 +61,37 @@
 
                 </div>
 
-                <h3 style="margin-bottom:10px;">
-                    {{ result.label }}
+                <h3 class="result-title">
+                    <span class="badge {{ result.label | lower }}">
+                        {{ result.label }}
+                    </span>
                 </h3>
                 <p>{{ result.explanation }}</p>
+
+                <div class="ai-breakdown">
+                    <p><strong>Why this is flagged:</strong></p>
+                    <ul>
+                        {% if "otp" in result.text.lower() or "password" in result.text.lower() %}
+                            <li>🔑 Sensitive information request detected</li>
+                        {% endif %}
+
+                        {% if "bank" in result.text.lower() or "account" in result.text.lower() %}
+                            <li>🏦 Financial context detected</li>
+                        {% endif %}
+
+                        {% if "click" in result.text.lower() or "link" in result.text.lower() %}
+                            <li>🔗 Suspicious link behavior</li>
+                        {% endif %}
+
+                        {% if "urgent" in result.text.lower() or "immediately" in result.text.lower() %}
+                            <li>⚠️ Urgency tactic used</li>
+                        {% endif %}
+
+                        {% if result.score < 30 %}
+                            <li>✅ No major scam indicators</li>
+                        {% endif %}
+                    </ul>
+                </div>
 
             </div>
 
@@ -71,7 +103,8 @@
     {% if error %}
     <p style="color: red; margin-bottom: 10px;">{{ error }}</p>
     {% endif %}
-    <form method="POST" action="/" class="input-box">
+    
+    <form method="POST" action="/dashboard" class="input-box">
         <input type="text" name="text" placeholder="Paste message here..." value="{{ prefill_text or '' }}" required>
         <button type="submit">Send</button>
         <button type="button" onclick="resetChat()">Reset</button>
@@ -81,7 +114,7 @@
 
 <script>
 function resetChat() {
-    window.location.href = "/";
+    window.location.href = "/dashboard";
 }
 </script>
 
@@ -97,93 +130,68 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const target = parseInt("{{ result.score if result else 0 }}") || 0;
 
-    let start = null;
-    const duration = target === 0 ? 2000 : 1500;
+    let current = 0;
 
-    function animate(timestamp) {
-        if (!start) start = timestamp;
-
-        const progress = Math.min((timestamp - start) / duration, 1);
-        const current = Math.floor(progress * target);
-
-        if (target === 0) {
-            water.setAttribute("d", `
-                M0 0
-                H120
-                V120
-                H0
-                Z
-            `);
-
-            water.style.fill = "#22c55e"; // green
-            scoreText.textContent = "0%";
-
-            if (typingText) {
-                setTimeout(() => {
-                    typingText.style.display = "none";
-                }, 1500);
-            }
-
-            return;
-        }
-        
-        let color;
-
-        if (current <= 20) {
-            color = "#22c55e"; // green
-        } else if (current <= 40) {
-            color = "#fde047"; // light yellow
-        } else if (current <= 70) {
-            color = "#f97316"; // orange
+    function animateFill() {
+        if (current < target) {
+            current++;
+            updateWater(current);
+            setTimeout(animateFill, 15);
         } else {
-            color = "#ef4444"; // red
+            if (typingText) typingText.style.display = "none";
+            requestAnimationFrame(animateWave);
         }
+    }
 
-        water.style.fill = color;
-        
-
-        const height = (current / 100) * 120;
-
-        // IMPORTANT FIX: move DOWN initially, then UP
+    function updateWater(percent) {
+        const height = (percent / 100) * 120;
         const y = 120 - height;
 
-        const waveHeight = 4 + 2 * Math.sin(waveOffset / 10);
+        let color;
+        if (percent <= 20) color = "#22c55e";
+        else if (percent <= 40) color = "#fde047";
+        else if (percent <= 70) color = "#f97316";
+        else color = "#ef4444";
 
+        water.style.fill = color;
+
+        const wave = `
+            M0 ${y}
+            Q30 ${y-4} 60 ${y}
+            T120 ${y}
+            V120 H0 Z
+        `;
+
+        water.setAttribute("d", wave);
+        scoreText.textContent = percent + "%";
+    }
+
+    function animateWave() {
         waveOffset += 0.6;
+
+        const height = (target / 100) * 120;
+        const y = 120 - height;
+        const waveHeight = 4 + 2 * Math.sin(waveOffset / 10);
         const shift = waveOffset % 60;
 
         const wave = `
-        M${shift - 120},${y}
-        Q${shift - 90},${y - waveHeight} ${shift - 60},${y}
-        T${shift - 30},${y}
-        T${shift},${y}
-        T${shift + 30},${y}
-        T${shift + 60},${y}
-        T${shift + 90},${y}
-        T${shift + 120},${y}
-        V120 H0 Z
+            M${shift - 120},${y}
+            Q${shift - 90},${y - waveHeight} ${shift - 60},${y}
+            T${shift - 30},${y}
+            T${shift},${y}
+            T${shift + 30},${y}
+            T${shift + 60},${y}
+            T${shift + 90},${y}
+            T${shift + 120},${y}
+            V120 H0 Z
         `;
 
         water.setAttribute("d", wave);
 
-        water.setAttribute("d", wave);
-
-        scoreText.textContent = current + "%";
-
-        if (progress < 1) {
-            requestAnimationFrame(animate);
-        } else {
-            if (typingText) {
-                typingText.style.display = "none";
-            }
-            requestAnimationFrame(animate); // KEEP RUNNING
-        }
+        requestAnimationFrame(animateWave);
     }
 
-    
-
-    requestAnimationFrame(animate);
-
+    animateFill();
 });
 </script>
 

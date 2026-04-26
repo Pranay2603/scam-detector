@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify OTP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="auth-container">
+    <div class="auth-card">
+
+        <h2>Verify OTP</h2>
+        <p class="auth-sub">Enter the OTP sent to your email</p>
+
+        <p id="otp-timer" style="color:#a78bfa; margin-bottom:10px;">
+            OTP expires in 02:00
+        </p>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        {% if error and "Too many attempts" in error %}
+            <p style="margin-top:10px;">
+                <a href="/forgot-password" class="auth-link">
+                    Go back and request a new OTP
+                </a>
+            </p>
+        {% endif %}
+
+        <form method="POST">
+            <input type="text" name="otp" placeholder="Enter OTP" required>
+
+            <button type="submit" class="btn-primary">Verify</button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+let otpTime = {{ otp_time | default(0) }};
+let currentTime = Date.now() / 1000;
+
+let timeLeft = Math.max(0, 120 - Math.floor(currentTime - otpTime));
+
+const timer = document.getElementById("otp-timer");
+const verifyBtn = document.querySelector(".btn-primary");
+
+const interval = setInterval(() => {
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    timer.innerText = `OTP expires in ${minutes}:${seconds}`;
+
+    if (timeLeft <= 30) {
+        timer.style.color = "#f87171";
+    }
+
+    if (timeLeft <= 0) {
+        clearInterval(interval);
+        timer.innerText = "OTP expired";
+
+        // 🔥 disable button
+        verifyBtn.disabled = true;
+        verifyBtn.style.opacity = "0.5";
+        verifyBtn.style.cursor = "not-allowed";
+    }
+
+    timeLeft--;
+}, 1000);
+</script>
+
+</body>
+</html>
