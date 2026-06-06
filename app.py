@@ -29,6 +29,7 @@ google = oauth.register(
 
 def send_otp_email(to_email, otp):
     sender_email = os.getenv("EMAIL_USER")
+    print("EMAIL_USER =", sender_email)
     app_password = os.getenv("EMAIL_PASS")
 
     subject = "Scam Detector - Password Reset OTP"
