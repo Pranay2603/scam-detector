@@ -9,7 +9,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 from model.detector import analyze_text
 from database.db import insert_history, get_all_history, delete_by_ids, delete_by_time, init_db, create_user, get_user, get_user_by_email, get_connection
 app = Flask(__name__)
-app.secret_key = "your_secret_key"
+app.secret_key = os.getenv("SECRET_KEY", "dev_secret")
 
 # ---------------- GOOGLE AUTH ----------------
 oauth = OAuth(app)
