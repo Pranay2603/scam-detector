@@ -1311,3 +1311,134 @@ circle {
     background: rgba(255,255,255,0.1);
     color: white;
 }
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+
+    /* NAV */
+    .nav {
+        padding: 16px 20px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .nav-links a {
+        margin-left: 12px;
+        font-size: 14px;
+    }
+
+    /* HERO */
+    .hero-section {
+        flex-direction: column;
+        padding: 40px 20px 60px;
+        height: auto;
+        text-align: center;
+    }
+
+    .hero-container {
+        width: 100%;
+        align-items: center;
+    }
+
+    .hero-container h1 {
+        font-size: 32px;
+    }
+
+    .hero-visual {
+        display: none;
+    }
+
+    .floating-card {
+        display: none;
+    }
+
+    /* SLIDER */
+    .slider-card {
+        width: 100%;
+        box-sizing: border-box;
+        height: auto;
+    }
+
+    /* FEATURES */
+    .features {
+        margin-top: 50px;
+        gap: 16px;
+    }
+
+    .feature-card {
+        min-width: unset;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* HOW SECTION */
+    .how-cards {
+        gap: 16px;
+    }
+
+    .how-card {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* AUTH */
+    .auth-card {
+        width: 90%;
+        padding: 28px 20px;
+        box-sizing: border-box;
+    }
+
+    /* HISTORY */
+    .history-summary {
+        flex-direction: column;
+    }
+
+    .history-meta {
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-end;
+    }
+
+    /* DASHBOARD */
+    .dash-wrap {
+        padding: 16px 14px 30px;
+    }
+
+    .dash-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .chat-area {
+        padding: 16px;
+        min-height: 300px;
+    }
+
+    .chip {
+        max-width: 100%;
+        white-space: normal;
+        text-align: left;
+    }
+
+    .input-row {
+        flex-wrap: wrap;
+    }
+
+    .input-row input {
+        width: 100%;
+        flex: unset;
+    }
+
+    .btn-send, .btn-reset {
+        flex: 1;
+    }
+
+    .msg-user {
+        max-width: 95%;
+    }
+
+    /* MODAL */
+    .modal-content {
+        width: 90%;
+        box-sizing: border-box;
+    }
+}
