@@ -28,9 +28,17 @@ google = oauth.register(
 )
 
 def send_otp_email(to_email, otp):
+    import traceback
     sender_email = os.getenv("EMAIL_USER")
-    print("EMAIL_USER =", sender_email)
     app_password = os.getenv("EMAIL_PASS")
+
+    print(f"[OTP] Attempting to send to {to_email}")
+    print(f"[OTP] EMAIL_USER = {sender_email}")
+    print(f"[OTP] EMAIL_PASS set = {bool(app_password)}")
+
+    if not sender_email or not app_password:
+        print("[OTP] ERROR: EMAIL_USER or EMAIL_PASS is missing from environment variables!")
+        return
 
     subject = "Scam Detector - Password Reset OTP"
     body = f"""
@@ -45,14 +53,18 @@ def send_otp_email(to_email, otp):
     msg["To"] = to_email
 
     try:
+        print("[OTP] Connecting to SMTP...")
         server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.ehlo()
         server.starttls()
+        server.ehlo()
         server.login(sender_email, app_password)
         server.sendmail(sender_email, to_email, msg.as_string())
         server.quit()
-        print("OTP sent to email")
+        print("[OTP] Email sent successfully!")
     except Exception as e:
-        print("Email error:", e)
+        print(f"[OTP] Email FAILED: {e}")
+        traceback.print_exc()
     
 
 # ---------------- INIT DB ----------------
