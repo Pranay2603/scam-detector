@@ -657,6 +657,43 @@ circle {
     box-shadow: 0 0 40px rgba(168,85,247,0.2);
 }
 
+.auth-card input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    box-sizing: border-box; /* ADD THIS */
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #a855f7, #6366f1);
+    color: white;
+    cursor: pointer;
+    box-sizing: border-box; /* ADD THIS */
+}
+
+.btn-google {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #1f2937;
+    color: white;
+    text-decoration: none;
+    box-sizing: border-box; /* ADD THIS */
+    text-align: center;
+}
+
 .auth-card h2 {
     margin-bottom: 5px;
 }
