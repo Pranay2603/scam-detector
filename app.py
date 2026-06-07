@@ -28,41 +28,19 @@ google = oauth.register(
 )
 
 def send_otp_email(to_email, otp):
-    import traceback
-    sender_email = os.getenv("EMAIL_USER")
-    app_password = os.getenv("EMAIL_PASS")
-
-    print(f"[OTP] Attempting to send to {to_email}")
-    print(f"[OTP] EMAIL_USER = {sender_email}")
-    print(f"[OTP] EMAIL_PASS set = {bool(app_password)}")
-
-    if not sender_email or not app_password:
-        print("[OTP] ERROR: EMAIL_USER or EMAIL_PASS is missing from environment variables!")
-        return
-
-    subject = "Scam Detector - Password Reset OTP"
-    body = f"""
-    Your OTP for password reset is: {otp}
-
-    This OTP is valid for 2 minutes.
-    If you did not request this, ignore this email.
-    """
-    msg = MIMEText(body)
-    msg["Subject"] = subject
-    msg["From"] = f"Scam Detector <{sender_email}>"
-    msg["To"] = to_email
-
+    import resend
+    resend.api_key = os.getenv("RESEND_API_KEY")
+    
     try:
-        print("[OTP] Connecting to SMTP...")
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-        server.login(sender_email, app_password)
-        server.sendmail(sender_email, to_email, msg.as_string())
-        server.quit()
+        resend.Emails.send({
+            "from": "Scam Detector <onboarding@resend.dev>",
+            "to": to_email,
+            "subject": "Scam Detector - Password Reset OTP",
+            "text": f"Your OTP for password reset is: {otp}\n\nThis OTP is valid for 2 minutes.\nIf you did not request this, ignore this email."
+        })
         print("[OTP] Email sent successfully!")
-        
     except Exception as e:
         print(f"[OTP] Email FAILED: {e}")
-        traceback.print_exc()
     
 
 # ---------------- INIT DB ----------------
