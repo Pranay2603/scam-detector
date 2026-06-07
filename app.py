@@ -228,7 +228,7 @@ def forgot_password():
         session["otp_time"] = time.time()
         session["otp_attempts"] = 0
 
-        send_otp_email(email, otp)
+        threading.Thread(target=send_otp_email, args=(email, otp)).start()
 
         return redirect(url_for("verify_otp", email=email))
 
