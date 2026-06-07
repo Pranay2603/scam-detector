@@ -30,6 +30,7 @@ google = oauth.register(
 def send_otp_email(to_email, otp):
     import resend
     resend.api_key = os.getenv("RESEND_API_KEY")
+    print(f"[OTP] RESEND_API_KEY set = {bool(resend.api_key)}")
     
     try:
         resend.Emails.send({
