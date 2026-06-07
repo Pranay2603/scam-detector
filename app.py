@@ -54,14 +54,12 @@ def send_otp_email(to_email, otp):
 
     try:
         print("[OTP] Connecting to SMTP...")
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         server.login(sender_email, app_password)
         server.sendmail(sender_email, to_email, msg.as_string())
         server.quit()
         print("[OTP] Email sent successfully!")
+        
     except Exception as e:
         print(f"[OTP] Email FAILED: {e}")
         traceback.print_exc()
